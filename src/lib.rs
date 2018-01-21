@@ -6,5 +6,10 @@
 // copied, modified, or distributed except according to those terms.
 
 extern crate toml;
+#[macro_use]
+extern crate serde_derive;
+extern crate serde;
+extern crate maskerad_filesystem;
 
 mod level_file;
+mod level_parser_error;
