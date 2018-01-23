@@ -1,0 +1,5 @@
+title = "level1"
+gameobjects = [
+"/home/malkaviel/Documents/projects/intellij/maskerad_level_parser/data_deserialization_test/gameobject1.toml",
+"/home/malkaviel/Documents/projects/intellij/maskerad_level_parser/data_deserialization_test/gameobject2.toml"
+]

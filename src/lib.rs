@@ -10,6 +10,11 @@ extern crate toml;
 extern crate serde_derive;
 extern crate serde;
 extern crate maskerad_filesystem;
+extern crate gltf;
 
-mod level_file;
+mod gameobject;
+mod gameobject_description;
+mod level_description;
 mod level_parser_error;
+mod gltf_resource;
+mod level;

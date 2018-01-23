@@ -7,7 +7,7 @@ license = "MIT/Apache-2.0"
 repository = "https://github.com/Maskerad-rs/maskerad_level_parser"
 readme = "README_CRATE.md"
 keywords = ["parser"]
-exclude = ["data_serialization_deserialization_test"]
+exclude = ["data_deserialization_test", "data_serialization_test", "resource_test"]
 
 [badges]
 
@@ -22,4 +22,5 @@ maintenance = { status = "actively-developed" }
 toml = "~0.4"
 serde_derive = "~1.0"
 serde = "~1.0"
+gltf = "~0.9"
 maskerad_filesystem = { git = "https://github.com/Maskerad-rs/maskerad_filesystem" }
