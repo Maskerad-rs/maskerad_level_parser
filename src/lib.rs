@@ -12,9 +12,9 @@ extern crate serde;
 extern crate maskerad_filesystem;
 extern crate gltf;
 
-mod gameobject;
-mod gameobject_description;
-mod level_description;
-mod level_parser_error;
-mod gltf_resource;
-mod level;
+pub mod gameobject;
+pub mod gameobject_description;
+pub mod level_description;
+pub mod level_parser_error;
+pub mod gltf_resource;
+pub mod level;
