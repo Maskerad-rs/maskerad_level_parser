@@ -8,7 +8,7 @@
 use level_description::LevelDescription;
 use std::path::{Path, PathBuf};
 use gameobject::GameObject;
-use gameobject_description::{GameObjectDescription, ComponentDescription};
+use gameobject_description::{GameObjectDescription, /*ComponentDescription*/};
 use level_parser_error::{LevelParserError, LevelParserResult};
 use maskerad_filesystem::filesystem::FileSystem;
 
@@ -75,6 +75,8 @@ impl Level {
     }
 }
 
+/*
+
 #[cfg(test)]
 mod level_test {
     use super::*;
@@ -110,3 +112,5 @@ mod level_test {
         level.save_as_toml(&file_system).unwrap();
     }
 }
+
+*/

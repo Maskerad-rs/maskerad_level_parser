@@ -12,7 +12,7 @@ use maskerad_filesystem::game_directories::RootDir;
 use level_parser_error::{LevelParserError, LevelParserResult};
 use std::path::Path;
 use gltf::Gltf;
-use gameobject_description::{GameObjectDescription, ComponentDescription};
+use gameobject_description::{GameObjectDescription, /*ComponentDescription*/};
 
 /*
     Level file structure:
@@ -77,6 +77,7 @@ impl LevelDescription {
     }
 }
 
+/*
 #[cfg(test)]
 mod level_file_test {
     use super::*;
@@ -108,3 +109,4 @@ mod level_file_test {
         file_system.write_all(&mut writer, level_toml_string.as_bytes()).unwrap();
     }
 }
+*/

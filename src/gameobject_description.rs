@@ -11,6 +11,7 @@ use maskerad_filesystem::game_directories::RootDir;
 use level_parser_error::{LevelParserError, LevelParserResult};
 use std::path::Path;
 
+/*
 #[derive(Deserialize, Serialize, Debug)]
 pub struct ComponentDescription {
     mesh: String,
@@ -27,18 +28,18 @@ impl ComponentDescription {
         self.mesh.as_ref()
     }
 }
-
+*/
 #[derive(Deserialize, Serialize, Debug)]
 pub struct GameObjectDescription {
     id: String,
-    components: ComponentDescription, //TODO: temporary.
+    //components: ComponentDescription, //TODO: temporary.
 }
 
 impl GameObjectDescription {
-    pub fn new(id: &str, components: ComponentDescription) -> Self {
+    pub fn new(id: &str /*components: ComponentDescription*/) -> Self {
         GameObjectDescription {
             id: String::from(id),
-            components,
+            //components,
         }
     }
 
@@ -57,11 +58,15 @@ impl GameObjectDescription {
         self.id.as_ref()
     }
 
+    /*
     pub fn components(&self) -> &ComponentDescription {
         &self.components
     }
+    */
 }
 
+
+/*
 #[cfg(test)]
 mod gameobject_description_test {
     use super::*;
@@ -82,3 +87,4 @@ mod gameobject_description_test {
         let file_system = FileSystem::new(GameInfos::new("gameobject_file_test", "malkaviel")).unwrap();
     }
 }
+*/

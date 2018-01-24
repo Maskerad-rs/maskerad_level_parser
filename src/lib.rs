@@ -16,5 +16,4 @@ pub mod gameobject;
 pub mod gameobject_description;
 pub mod level_description;
 pub mod level_parser_error;
-pub mod gltf_resource;
 pub mod level;

@@ -7,16 +7,17 @@
 
 use toml;
 use gltf::Gltf;
-use gltf_resource::GltfResource;
 use level_parser_error::{LevelParserError, LevelParserResult};
-use gameobject_description::{GameObjectDescription, ComponentDescription};
+use gameobject_description::{GameObjectDescription, /*ComponentDescription*/};
 use maskerad_filesystem::filesystem::FileSystem;
 use std::path::{Path, PathBuf};
 
+/*
 #[derive(Debug)]
 pub struct Components {
     mesh: GltfResource,
 }
+
 
 impl Components {
     pub fn new(mesh: GltfResource) -> Self {
@@ -29,22 +30,24 @@ impl Components {
         &self.mesh
     }
 }
+*/
 
 #[derive(Debug)]
 pub struct GameObject {
     id: PathBuf,
-    components: Components, //TODO: temporary.
+    //components: Components, //TODO: temporary.
 }
 
 impl GameObject {
-    fn new(id: &Path, components: Components) -> Self {
+    fn new(id: &Path /*components: Components*/) -> Self {
         GameObject {
             id: PathBuf::from(id),
-            components,
+            //components,
         }
     }
 
     pub fn from_gameobject_description(description: GameObjectDescription, file_system: &FileSystem) -> LevelParserResult<Self> {
+        /*
         let gltf_path = PathBuf::from(description.components().mesh_path());
         let gltf_reader = file_system.open(gltf_path.as_path())?;
         let gltf_data = Gltf::from_reader(gltf_reader)?.validate_completely()?;
@@ -52,14 +55,15 @@ impl GameObject {
         let gltf_resource = GltfResource::new(gltf_path.as_path(), gltf_data);
 
         let components = Components::new(gltf_resource);
+        */
 
-        Ok(GameObject::new(Path::new(description.id()), components))
+        Ok(GameObject::new(Path::new(description.id()) /*components*/))
     }
 
     pub fn save_as_toml(&self, file_system: &FileSystem) -> LevelParserResult<()> {
-        let component_description = ComponentDescription::new(self.components().mesh().id().to_str().unwrap());
+        //let component_description = ComponentDescription::new(self.components().mesh().id().to_str().unwrap());
 
-        let go_desc = GameObjectDescription::new(self.id().to_str().unwrap(), component_description);
+        let go_desc = GameObjectDescription::new(self.id().to_str().unwrap() /*component_description*/);
 
         let toml_string = go_desc.as_string_toml()?;
         let mut bufwriter = file_system.create(self.id.as_path())?;
@@ -71,17 +75,19 @@ impl GameObject {
         self.id.as_path()
     }
 
+    /*
     pub fn components(&self) -> &Components {
         &self.components
     }
+    */
 }
 
+/*
 #[cfg(test)]
 mod gameobject_test {
     use super::*;
     use maskerad_filesystem::game_infos::GameInfos;
     use maskerad_filesystem::game_directories::RootDir;
-    use std::ffi::OsStr;
 
     #[test]
     fn deserialization_gameobject() {
@@ -93,7 +99,6 @@ mod gameobject_test {
         let go_desc = GameObjectDescription::load_from_toml(content.as_ref()).unwrap();
         let go = GameObject::from_gameobject_description(go_desc, &file_system).unwrap();
         assert_eq!(go.id.to_str().unwrap(), "gameobject1");
-        let gltf_ref = go.components().mesh();
-        assert_eq!(gltf_ref.id().extension(), Some(OsStr::new("gltf")));
     }
 }
+*/
