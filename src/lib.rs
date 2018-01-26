@@ -11,9 +11,10 @@ extern crate serde_derive;
 extern crate serde;
 extern crate maskerad_filesystem;
 extern crate gltf;
+extern crate maskerad_gameobject_model;
 
-pub mod gameobject;
 pub mod gameobject_description;
 pub mod level_description;
-pub mod level_parser_error;
-pub mod level;
+pub mod data_parser_error;
+pub mod transform_description;
+pub mod mesh_description;

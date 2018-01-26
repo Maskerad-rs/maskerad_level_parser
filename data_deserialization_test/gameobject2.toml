@@ -1,4 +1,9 @@
-  id = "gameobject2"
+id = "gameobject2"
 
-  [components]
-  mesh = "/home/malkaviel/Documents/projects/intellij/maskerad_level_parser/resource_test/untitled.gltf"
+[transform]
+position = [0.0, 0.0, 0.0]
+rotation = [0.0, 0.0, 0.0]
+scale = [1.0, 1.0, 1.0]
+
+[mesh]
+path = "/home/malkaviel/Documents/projects/intellij/maskerad_level_parser/resource_test/untitled.gltf"

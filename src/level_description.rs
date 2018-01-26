@@ -9,10 +9,10 @@ use toml;
 use std::collections::HashMap;
 use maskerad_filesystem::filesystem::FileSystem;
 use maskerad_filesystem::game_directories::RootDir;
-use level_parser_error::{LevelParserError, LevelParserResult};
+use data_parser_error::{DataParserError, DataParserResult};
 use std::path::Path;
 use gltf::Gltf;
-use gameobject_description::{GameObjectDescription, /*ComponentDescription*/};
+use gameobject_description::{GameObjectDescription};
 
 /*
     Level file structure:
@@ -26,22 +26,6 @@ use gameobject_description::{GameObjectDescription, /*ComponentDescription*/};
 
 */
 
-/*
-    Gameobject file structure:
-    title = "game object name"
-
-    [transform]
-    position = [x, y, z]
-    rot = [x, y, z]
-    scale = [x, y, z]
-
-    [mesh filter]
-    mesh = "path to mesh file"
-
-    [...]
-    ...
-*/
-
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct LevelDescription {
@@ -50,34 +34,40 @@ pub struct LevelDescription {
 }
 
 impl LevelDescription {
-    pub fn new(title: &str, gameobjects: Vec<String>) -> Self {
-        LevelDescription {
-            title: String::from(title),
-            gameobjects,
-        }
-    }
-
-    pub fn load_from_toml(path: &str) -> LevelParserResult<Self> {
+    pub fn load_from_toml(path: &str) -> DataParserResult<Self> {
         toml::from_str(path).map_err(|deserialization_error| {
-            LevelParserError::from(deserialization_error)
+            DataParserError::from(deserialization_error)
         })
     }
 
-    pub fn as_string_toml(&self) -> LevelParserResult<String> {
+    fn as_string_toml(&self) -> DataParserResult<String> {
         let toml_string = toml::to_string(&self)?;
         Ok(toml_string)
     }
 
-    pub fn level_title(&self) -> &str {
-        self.title.as_ref()
+    pub fn save_as_toml(&self, file_system: &FileSystem) -> DataParserResult<()> {
+        let toml_string = self.as_string_toml()?;
+        let mut bufwriter = file_system.create(self.title.as_ref())?;
+        file_system.write_all(&mut bufwriter, toml_string.as_bytes())?;
+        Ok(())
     }
 
-    pub fn gameobjects(&self) -> &Vec<String> {
-        &self.gameobjects
+    pub fn generate_gameobject_descriptions(&self, file_system: &FileSystem) -> DataParserResult<Vec<GameObjectDescription>> {
+        let mut vec_go_desc = Vec::new();
+        let mut content = String::new();
+
+        for path in self.gameobjects.iter() {
+            content.clear();
+            let mut reader = file_system.open(path.as_ref())?;
+            file_system.read_to_string(&mut reader, &mut content)?;
+            vec_go_desc.push(GameObjectDescription::load_from_toml(content.as_str())?);
+        }
+
+        Ok(vec_go_desc)
     }
 }
 
-/*
+
 #[cfg(test)]
 mod level_file_test {
     use super::*;
@@ -92,10 +82,11 @@ mod level_file_test {
         let mut bufreader = file_system.open(path.as_path()).unwrap();
         file_system.read_to_string(&mut bufreader, &mut content).unwrap();
         let level_desc = LevelDescription::load_from_toml(content.as_str()).unwrap();
-        assert_eq!(level_desc.level_title(), "level1");
-        assert_eq!(level_desc.gameobjects().iter().count(), 2);
+        assert_eq!(level_desc.title, "level1");
+        assert_eq!(level_desc.gameobjects.iter().count(), 2);
     }
 
+    /*
     #[test]
     fn test_serialization() {
         let file_system = FileSystem::new(GameInfos::new("gameobject_file_test", "malkaviel")).unwrap();
@@ -108,5 +99,5 @@ mod level_file_test {
         let mut writer = file_system.create(path.as_path()).unwrap();
         file_system.write_all(&mut writer, level_toml_string.as_bytes()).unwrap();
     }
+    */
 }
-*/
