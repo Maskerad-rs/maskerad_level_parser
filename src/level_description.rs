@@ -41,7 +41,7 @@ impl LevelDescription {
     }
 
     fn as_string_toml(&self) -> DataParserResult<String> {
-        let toml_string = toml::to_string(&self)?;
+        let toml_string = toml::to_string_pretty(&self)?;
         Ok(toml_string)
     }
 
@@ -66,7 +66,16 @@ impl LevelDescription {
         Ok(vec_go_desc)
     }
 
+    pub fn new(title: &str) -> Self {
+        LevelDescription {
+            title: String::from(title),
+            gameobjects: Vec::new(),
+        }
+    }
 
+    pub fn add_gameobject(&mut self, path: &str) {
+        self.gameobjects.push(String::from(path));
+    }
 }
 
 
@@ -88,18 +97,35 @@ mod level_file_test {
         assert_eq!(level_desc.gameobjects.iter().count(), 2);
     }
 
-    /*
+
     #[test]
     fn test_serialization() {
         let file_system = FileSystem::new(GameInfos::new("gameobject_file_test", "malkaviel")).unwrap();
-        let path = file_system.construct_path_from_root(&RootDir::WorkingDirectory, "data_serialization_test/level2.toml").unwrap();
+        let level_path = file_system.construct_path_from_root(&RootDir::WorkingDirectory, "data_serialization_test/level2.toml").unwrap();
 
-        let level_desc = LevelDescription::new(path.to_str().unwrap(), Vec::new());
-        assert_eq!(level_desc.level_title(), "/home/malkaviel/Documents/projects/intellij/maskerad_level_parser/data_serialization_test/level2.toml");
-        assert_eq!(level_desc.gameobjects().iter().count(), 0);
-        let level_toml_string = level_desc.as_string_toml().unwrap();
-        let mut writer = file_system.create(path.as_path()).unwrap();
-        file_system.write_all(&mut writer, level_toml_string.as_bytes()).unwrap();
+        let mut level_desc = LevelDescription::new(level_path.to_str().unwrap());
+        assert_eq!(level_desc.title, "/home/malkaviel/Documents/projects/intellij/maskerad_level_parser/data_serialization_test/level2.toml");
+        assert_eq!(level_desc.gameobjects.iter().count(), 0);
+
+        let go4_path = file_system.construct_path_from_root(&RootDir::WorkingDirectory, "data_serialization_test/gameobject4.toml").unwrap();
+        let go5_path = file_system.construct_path_from_root(&RootDir::WorkingDirectory, "data_serialization_test/gameobject5.toml").unwrap();
+        let mut content = String::new();
+
+        let mut reader_go4 = file_system.open(go4_path.as_path()).unwrap();
+        file_system.read_to_string(&mut reader_go4, &mut content).unwrap();
+        let go4_desc = GameObjectDescription::load_from_toml(content.as_str()).unwrap();
+
+        content.clear();
+
+        let mut reader_go5 = file_system.open(go5_path.as_path()).unwrap();
+        file_system.read_to_string(&mut reader_go5, &mut content).unwrap();
+        let go5_desc = GameObjectDescription::load_from_toml(content.as_str()).unwrap();
+
+        level_desc.add_gameobject(go4_desc.id());
+        level_desc.add_gameobject(go5_desc.id());
+
+        level_desc.save_as_toml(&file_system).unwrap();
+        assert!(file_system.exists(level_path.as_path()));
     }
-    */
+
 }

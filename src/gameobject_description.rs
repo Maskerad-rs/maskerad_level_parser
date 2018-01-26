@@ -54,7 +54,7 @@ impl GameObjectDescription {
     }
 
     fn as_string_toml(&self) -> DataParserResult<String> {
-        let toml_string = toml::to_string(&self)?;
+        let toml_string = toml::to_string_pretty(&self)?;
         Ok(toml_string)
     }
 
@@ -77,6 +77,10 @@ impl GameObjectDescription {
             transform: transform_desc,
             mesh: mesh_desc,
         }
+    }
+
+    pub fn id(&self) -> &str {
+        self.id.as_str()
     }
 }
 
@@ -133,6 +137,7 @@ mod gameobject_description_test {
 
         let go4_desc = GameObjectDescription::new(go4_path.to_str().unwrap(), transform_desc, Some(mesh_desc));
         go4_desc.save_as_toml(&file_system).unwrap();
+        assert!(file_system.exists(go4_path.as_path()));
 
         let pos = vec![5.0, 7.0, 11.0];
         let rot = vec![0.8, 5.2, 1.0];
@@ -142,6 +147,7 @@ mod gameobject_description_test {
         let go5_path = file_system.construct_path_from_root(&RootDir::WorkingDirectory, "data_serialization_test/gameobject5.toml").expect("Could not construct go5 path");
         let go5_desc = GameObjectDescription::new(go5_path.to_str().unwrap(), transform_desc, None);
         go5_desc.save_as_toml(&file_system).unwrap();
+        assert!(file_system.exists(go5_path.as_path()));
     }
 
 }
