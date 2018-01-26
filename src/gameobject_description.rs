@@ -70,6 +70,14 @@ impl GameObjectDescription {
         //create the game object
         Ok(GameObject::new(self.id.as_ref()))
     }
+
+    pub fn new(id: &str, transform_desc: TransformDescription, mesh_desc: Option<MeshDescription>) -> Self {
+        GameObjectDescription {
+            id: String::from(id),
+            transform: transform_desc,
+            mesh: mesh_desc,
+        }
+    }
 }
 
 
@@ -110,10 +118,30 @@ mod gameobject_description_test {
 
     }
 
-    /*
+
     #[test]
     fn serialize() {
         let file_system = FileSystem::new(GameInfos::new("gameobject_file_test", "malkaviel")).unwrap();
+        let go4_path = file_system.construct_path_from_root(&RootDir::WorkingDirectory, "data_serialization_test/gameobject4.toml").expect("Could not construct go4 path");
+
+
+        let pos = vec![1.0, 2.0, 3.0];
+        let rot = vec![0.0, 0.0, 0.0];
+        let scale = vec![2.0, 2.0, 2.0];
+        let transform_desc = TransformDescription::new(&pos, &rot, &scale);
+        let mesh_desc = MeshDescription::new("path_test_mesh");
+
+        let go4_desc = GameObjectDescription::new(go4_path.to_str().unwrap(), transform_desc, Some(mesh_desc));
+        go4_desc.save_as_toml(&file_system).unwrap();
+
+        let pos = vec![5.0, 7.0, 11.0];
+        let rot = vec![0.8, 5.2, 1.0];
+        let scale = vec![2.4, 2.2, 2.9];
+        let transform_desc = TransformDescription::new(&pos, &rot, &scale);
+
+        let go5_path = file_system.construct_path_from_root(&RootDir::WorkingDirectory, "data_serialization_test/gameobject5.toml").expect("Could not construct go5 path");
+        let go5_desc = GameObjectDescription::new(go5_path.to_str().unwrap(), transform_desc, None);
+        go5_desc.save_as_toml(&file_system).unwrap();
     }
-    */
+
 }
