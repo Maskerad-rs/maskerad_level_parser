@@ -104,7 +104,7 @@ mod level_file_test {
         let level_path = file_system.construct_path_from_root(&RootDir::WorkingDirectory, "data_serialization_test/level2.toml").unwrap();
 
         let mut level_desc = LevelDescription::new(level_path.to_str().unwrap());
-        assert_eq!(level_desc.title, "/home/malkaviel/Documents/projects/intellij/maskerad_level_parser/data_serialization_test/level2.toml");
+        assert_eq!(level_desc.title.as_str(), level_path.to_str().unwrap());
         assert_eq!(level_desc.gameobjects.iter().count(), 0);
 
         let go4_path = file_system.construct_path_from_root(&RootDir::WorkingDirectory, "data_serialization_test/gameobject4.toml").unwrap();
