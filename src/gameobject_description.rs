@@ -12,7 +12,6 @@ use data_parser_error::{DataParserError, DataParserResult};
 use std::path::Path;
 
 use maskerad_gameobject_model::gameobject::GameObject;
-use maskerad_gameobject_model::properties_map::PropertiesMap;
 use mesh_description::MeshDescription;
 use transform_description::TransformDescription;
 
@@ -58,6 +57,8 @@ impl GameObjectDescription {
         Ok(toml_string)
     }
 
+    //FIXME: Not the desired behavior.
+    /*
     pub fn generate_gameobject(&self, properties_map: &mut PropertiesMap, file_system: &FileSystem) -> DataParserResult<GameObject> {
         //Read all the properties of the gameobject and add them to the PropertiesMap
         //transform
@@ -70,6 +71,7 @@ impl GameObjectDescription {
         //create the game object
         Ok(GameObject::new(self.id.as_ref()))
     }
+    */
 
     pub fn new(id: &str, transform_desc: TransformDescription, mesh_desc: Option<MeshDescription>) -> Self {
         GameObjectDescription {
