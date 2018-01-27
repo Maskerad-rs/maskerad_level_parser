@@ -76,6 +76,10 @@ impl LevelDescription {
     pub fn add_gameobject(&mut self, path: &str) {
         self.gameobjects.push(String::from(path));
     }
+
+    pub fn gameobject_description_paths(&self) -> &[String] {
+        &self.gameobjects
+    }
 }
 
 
