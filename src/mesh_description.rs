@@ -23,6 +23,10 @@ impl MeshDescription {
         }
     }
 
+    pub fn path(&self) -> &str {
+        self.path.as_str()
+    }
+
     //FIXME
     /*
     pub fn generate_mesh(&self, file_system: &FileSystem) -> DataParserResult<Mesh> {
