@@ -23,10 +23,13 @@ impl MeshDescription {
         }
     }
 
+    //FIXME
+    /*
     pub fn generate_mesh(&self, file_system: &FileSystem) -> DataParserResult<Mesh> {
         let gltf_reader = file_system.open(self.path.as_ref())?;
         let gltf_data = Gltf::from_reader(gltf_reader)?.validate_completely()?;
 
         Ok(Mesh::new(gltf_data))
     }
+    */
 }

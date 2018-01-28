@@ -35,6 +35,8 @@ impl TransformDescription {
         &self.scale
     }
 
+    //FIXME
+    /*
     pub fn generate_transform(&self) -> Transform {
         let pos = (self.position[0], self.position[1], self.position[2]);
         let rot = (self.rotation[0], self.rotation[1], self.rotation[2]);
@@ -42,4 +44,5 @@ impl TransformDescription {
 
         Transform::new(pos, rot, scale)
     }
+    */
 }
