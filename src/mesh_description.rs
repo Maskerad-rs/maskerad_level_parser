@@ -8,6 +8,7 @@
 use maskerad_gameobject_model::properties::mesh::Mesh;
 use maskerad_filesystem::filesystem::FileSystem;
 use data_parser_error::DataParserResult;
+use std::path::Path;
 
 use gltf::Gltf;
 
@@ -23,8 +24,8 @@ impl MeshDescription {
         }
     }
 
-    pub fn path(&self) -> &str {
-        self.path.as_str()
+    pub fn path(&self) -> &Path {
+        self.path.as_ref()
     }
 
     //FIXME
