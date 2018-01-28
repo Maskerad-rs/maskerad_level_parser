@@ -84,6 +84,14 @@ impl GameObjectDescription {
     pub fn id(&self) -> &str {
         self.id.as_str()
     }
+
+    pub fn transform(&self) -> &TransformDescription {
+        &self.transform
+    }
+
+    pub fn mesh(&self) -> &Option<MeshDescription> {
+        &self.mesh
+    }
 }
 
 
