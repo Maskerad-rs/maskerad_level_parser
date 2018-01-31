@@ -6,7 +6,7 @@
 // copied, modified, or distributed except according to those terms.
 
 use toml;
-use maskerad_filesystem::filesystem::FileSystem;
+use maskerad_filesystem::filesystem as maskerad_filesystem;
 use maskerad_filesystem::game_directories::RootDir;
 use data_parser_error::{DataParserError, DataParserResult};
 use std::path::Path;
@@ -45,10 +45,10 @@ impl GameObjectDescription {
         })
     }
 
-    pub fn save_as_toml(&self, file_system: &FileSystem) -> DataParserResult<()> {
+    pub fn save_as_toml(&self) -> DataParserResult<()> {
         let toml_string = self.as_string_toml()?;
-        let mut bufwriter = file_system.create(self.id.as_ref())?;
-        file_system.write_all(&mut bufwriter, toml_string.as_bytes())?;
+        let mut bufwriter = maskerad_filesystem::create(self.id.as_ref())?;
+        maskerad_filesystem::write_all(&mut bufwriter, toml_string.as_bytes())?;
         Ok(())
     }
 
@@ -99,16 +99,17 @@ impl GameObjectDescription {
 #[cfg(test)]
 mod gameobject_description_test {
     use super::*;
+    use maskerad_filesystem::game_directories::GameDirectories;
     use maskerad_filesystem::game_infos::GameInfos;
 
     #[test]
     fn deserialize() {
         // gameobject2.toml -> has mesh
-        let file_system = FileSystem::new(GameInfos::new("gameobject_file_test", "malkaviel")).unwrap();
-        let go2_path = file_system.construct_path_from_root(&RootDir::WorkingDirectory, "data_deserialization_test/gameobject2.toml").unwrap();
-        let mut go2_reader = file_system.open(go2_path.as_path()).unwrap();
+        let game_dirs = GameDirectories::new(GameInfos::new("gameobject_file_test", "malkaviel")).unwrap();
+        let go2_path = game_dirs.construct_path_from_root(&RootDir::WorkingDirectory, "data_deserialization_test/gameobject2.toml").unwrap();
+        let mut go2_reader = maskerad_filesystem::open(go2_path.as_path()).unwrap();
         let mut content = String::new();
-        file_system.read_to_string(&mut go2_reader, &mut content).unwrap();
+        maskerad_filesystem::read_to_string(&mut go2_reader, &mut content).unwrap();
         let go2_desc = GameObjectDescription::load_from_toml(content.as_str()).unwrap();
 
         assert!(go2_desc.mesh.is_some());
@@ -118,10 +119,10 @@ mod gameobject_description_test {
         assert_eq!(go2_desc.transform.rotation(), vec![0.0, 0.0, 0.0].as_slice());
 
         //gameobject1.toml -> no mesh
-        let go1_path = file_system.construct_path_from_root(&RootDir::WorkingDirectory, "data_deserialization_test/gameobject1.toml").unwrap();
-        let mut go1_reader = file_system.open(go1_path.as_path()).unwrap();
+        let go1_path = game_dirs.construct_path_from_root(&RootDir::WorkingDirectory, "data_deserialization_test/gameobject1.toml").unwrap();
+        let mut go1_reader = maskerad_filesystem::open(go1_path.as_path()).unwrap();
         content.clear();
-        file_system.read_to_string(&mut go1_reader, &mut content).unwrap();
+        maskerad_filesystem::read_to_string(&mut go1_reader, &mut content).unwrap();
         let go1_desc = GameObjectDescription::load_from_toml(content.as_str()).unwrap();
 
         assert!(go1_desc.mesh.is_none());
@@ -135,8 +136,8 @@ mod gameobject_description_test {
 
     #[test]
     fn serialize() {
-        let file_system = FileSystem::new(GameInfos::new("gameobject_file_test", "malkaviel")).unwrap();
-        let go4_path = file_system.construct_path_from_root(&RootDir::WorkingDirectory, "data_serialization_test/gameobject4.toml").expect("Could not construct go4 path");
+        let game_dirs = GameDirectories::new(GameInfos::new("gameobject_file_test", "malkaviel")).unwrap();
+        let go4_path = game_dirs.construct_path_from_root(&RootDir::WorkingDirectory, "data_serialization_test/gameobject4.toml").expect("Could not construct go4 path");
 
 
         let pos = vec![1.0, 2.0, 3.0];
@@ -146,18 +147,18 @@ mod gameobject_description_test {
         let mesh_desc = MeshDescription::new("path_test_mesh");
 
         let go4_desc = GameObjectDescription::new(go4_path.to_str().unwrap(), transform_desc, Some(mesh_desc));
-        go4_desc.save_as_toml(&file_system).unwrap();
-        assert!(file_system.exists(go4_path.as_path()));
+        go4_desc.save_as_toml().unwrap();
+        assert!(go4_path.as_path().exists());
 
         let pos = vec![5.0, 7.0, 11.0];
         let rot = vec![0.8, 5.2, 1.0];
         let scale = vec![2.4, 2.2, 2.9];
         let transform_desc = TransformDescription::new(&pos, &rot, &scale);
 
-        let go5_path = file_system.construct_path_from_root(&RootDir::WorkingDirectory, "data_serialization_test/gameobject5.toml").expect("Could not construct go5 path");
+        let go5_path = game_dirs.construct_path_from_root(&RootDir::WorkingDirectory, "data_serialization_test/gameobject5.toml").expect("Could not construct go5 path");
         let go5_desc = GameObjectDescription::new(go5_path.to_str().unwrap(), transform_desc, None);
-        go5_desc.save_as_toml(&file_system).unwrap();
-        assert!(file_system.exists(go5_path.as_path()));
+        go5_desc.save_as_toml().unwrap();
+        assert!(go5_path.as_path().exists());
     }
 
 }

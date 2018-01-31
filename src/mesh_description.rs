@@ -6,7 +6,6 @@
 // copied, modified, or distributed except according to those terms.
 
 use maskerad_gameobject_model::properties::mesh::Mesh;
-use maskerad_filesystem::filesystem::FileSystem;
 use data_parser_error::DataParserResult;
 use std::path::Path;
 

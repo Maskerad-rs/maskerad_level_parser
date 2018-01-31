@@ -7,7 +7,7 @@
 
 use toml;
 use std::collections::HashMap;
-use maskerad_filesystem::filesystem::FileSystem;
+use maskerad_filesystem::filesystem as maskerad_filesystem;
 use maskerad_filesystem::game_directories::RootDir;
 use data_parser_error::{DataParserError, DataParserResult};
 use std::path::Path;
@@ -45,21 +45,21 @@ impl LevelDescription {
         Ok(toml_string)
     }
 
-    pub fn save_as_toml(&self, file_system: &FileSystem) -> DataParserResult<()> {
+    pub fn save_as_toml(&self) -> DataParserResult<()> {
         let toml_string = self.as_string_toml()?;
-        let mut bufwriter = file_system.create(self.title.as_ref())?;
-        file_system.write_all(&mut bufwriter, toml_string.as_bytes())?;
+        let mut bufwriter = maskerad_filesystem::create(self.title.as_ref())?;
+        maskerad_filesystem::write_all(&mut bufwriter, toml_string.as_bytes())?;
         Ok(())
     }
 
-    pub fn generate_gameobject_descriptions(&self, file_system: &FileSystem) -> DataParserResult<Vec<GameObjectDescription>> {
+    pub fn generate_gameobject_descriptions(&self) -> DataParserResult<Vec<GameObjectDescription>> {
         let mut vec_go_desc = Vec::new();
         let mut content = String::new();
 
         for path in self.gameobjects.iter() {
             content.clear();
-            let mut reader = file_system.open(path.as_ref())?;
-            file_system.read_to_string(&mut reader, &mut content)?;
+            let mut reader = maskerad_filesystem::open(path.as_ref())?;
+            maskerad_filesystem::read_to_string(&mut reader, &mut content)?;
             vec_go_desc.push(GameObjectDescription::load_from_toml(content.as_str())?);
         }
 
@@ -87,15 +87,16 @@ impl LevelDescription {
 mod level_file_test {
     use super::*;
     use std::path::PathBuf;
+    use maskerad_filesystem::game_directories::GameDirectories;
     use maskerad_filesystem::game_infos::GameInfos;
 
     #[test]
     fn test_deserialization() {
-        let file_system = FileSystem::new(GameInfos::new("gameobject_file_test", "malkaviel")).unwrap();
+        let game_dirs = GameDirectories::new(GameInfos::new("gameobject_file_test", "malkaviel")).unwrap();
         let mut content = String::new();
-        let path = file_system.construct_path_from_root(&RootDir::WorkingDirectory, "data_deserialization_test/level1.toml").unwrap();
-        let mut bufreader = file_system.open(path.as_path()).unwrap();
-        file_system.read_to_string(&mut bufreader, &mut content).unwrap();
+        let path = game_dirs.construct_path_from_root(&RootDir::WorkingDirectory, "data_deserialization_test/level1.toml").unwrap();
+        let mut bufreader = maskerad_filesystem::open(path.as_path()).unwrap();
+        maskerad_filesystem::read_to_string(&mut bufreader, &mut content).unwrap();
         let level_desc = LevelDescription::load_from_toml(content.as_str()).unwrap();
         assert_eq!(level_desc.title, "level1");
         assert_eq!(level_desc.gameobjects.iter().count(), 2);
@@ -104,32 +105,32 @@ mod level_file_test {
 
     #[test]
     fn test_serialization() {
-        let file_system = FileSystem::new(GameInfos::new("gameobject_file_test", "malkaviel")).unwrap();
-        let level_path = file_system.construct_path_from_root(&RootDir::WorkingDirectory, "data_serialization_test/level2.toml").unwrap();
+        let game_dirs = GameDirectories::new(GameInfos::new("gameobject_file_test", "malkaviel")).unwrap();
+        let level_path = game_dirs.construct_path_from_root(&RootDir::WorkingDirectory, "data_serialization_test/level2.toml").unwrap();
 
         let mut level_desc = LevelDescription::new(level_path.to_str().unwrap());
         assert_eq!(level_desc.title.as_str(), level_path.to_str().unwrap());
         assert_eq!(level_desc.gameobjects.iter().count(), 0);
 
-        let go4_path = file_system.construct_path_from_root(&RootDir::WorkingDirectory, "data_serialization_test/gameobject4.toml").unwrap();
-        let go5_path = file_system.construct_path_from_root(&RootDir::WorkingDirectory, "data_serialization_test/gameobject5.toml").unwrap();
+        let go4_path = game_dirs.construct_path_from_root(&RootDir::WorkingDirectory, "data_serialization_test/gameobject4.toml").unwrap();
+        let go5_path = game_dirs.construct_path_from_root(&RootDir::WorkingDirectory, "data_serialization_test/gameobject5.toml").unwrap();
         let mut content = String::new();
 
-        let mut reader_go4 = file_system.open(go4_path.as_path()).unwrap();
-        file_system.read_to_string(&mut reader_go4, &mut content).unwrap();
+        let mut reader_go4 = maskerad_filesystem::open(go4_path.as_path()).unwrap();
+        maskerad_filesystem::read_to_string(&mut reader_go4, &mut content).unwrap();
         let go4_desc = GameObjectDescription::load_from_toml(content.as_str()).unwrap();
 
         content.clear();
 
-        let mut reader_go5 = file_system.open(go5_path.as_path()).unwrap();
-        file_system.read_to_string(&mut reader_go5, &mut content).unwrap();
+        let mut reader_go5 = maskerad_filesystem::open(go5_path.as_path()).unwrap();
+        maskerad_filesystem::read_to_string(&mut reader_go5, &mut content).unwrap();
         let go5_desc = GameObjectDescription::load_from_toml(content.as_str()).unwrap();
 
         level_desc.add_gameobject(go4_desc.id());
         level_desc.add_gameobject(go5_desc.id());
 
-        level_desc.save_as_toml(&file_system).unwrap();
-        assert!(file_system.exists(level_path.as_path()));
+        level_desc.save_as_toml().unwrap();
+        assert!(level_path.as_path().exists());
     }
 
 }
