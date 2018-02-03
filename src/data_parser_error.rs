@@ -11,6 +11,7 @@ use std::fmt;
 use std::error::Error;
 use maskerad_filesystem::filesystem_error::FileSystemError;
 use gltf::Error as GltfError;
+use std::io::Error as IoError;
 
 
 #[derive(Debug)]
@@ -19,7 +20,11 @@ pub enum DataParserError {
     SerializationError(String, SerializationError),
     FileSystemError(String, FileSystemError),
     GltfError(String, GltfError),
+    IoError(String, IoError),
 }
+
+unsafe impl Send for DataParserError {}
+unsafe impl Sync for DataParserError {}
 
 impl fmt::Display for DataParserError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -34,7 +39,10 @@ impl fmt::Display for DataParserError {
                 write!(f, "File system error: {}", description)
             },
             &DataParserError::GltfError(ref description, _) => {
-                write!(f, "Gltf Error: {}", description)
+                write!(f, "Gltf error: {}", description)
+            },
+            &DataParserError::IoError(ref description, _) => {
+                write!(f, "Io error: {}", description)
             },
         }
     }
@@ -55,6 +63,9 @@ impl Error for DataParserError {
             &DataParserError::GltfError(_, _) => {
                 "GltfError"
             },
+            &DataParserError::IoError(_, _) => {
+                "IoError"
+            }
         }
     }
 
@@ -71,6 +82,9 @@ impl Error for DataParserError {
             },
             &DataParserError::GltfError(_, ref gltf_error) => {
                 Some(gltf_error)
+            },
+            &DataParserError::IoError(_, ref io_error) => {
+                Some(io_error)
             },
         }
     }
@@ -99,5 +113,11 @@ impl From<FileSystemError> for DataParserError {
 impl From<GltfError> for DataParserError {
     fn from(error: GltfError) -> Self {
         DataParserError::GltfError(format!("Error while manipulating gltf data."), error)
+    }
+}
+
+impl From<IoError> for DataParserError {
+    fn from(error: IoError) -> Self {
+        DataParserError::IoError(format!("Error while doing I/O filesystem operations."), error)
     }
 }

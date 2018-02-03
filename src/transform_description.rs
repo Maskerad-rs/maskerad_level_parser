@@ -7,7 +7,7 @@
 
 use maskerad_gameobject_model::properties::transform::Transform;
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, PartialOrd, PartialEq, Default)]
 pub struct TransformDescription {
     position: Vec<f64>,
     rotation: Vec<f64>,
@@ -15,11 +15,15 @@ pub struct TransformDescription {
 }
 
 impl TransformDescription {
-    pub fn new(position: &[f64], rotation: &[f64], scale: &[f64]) -> Self {
+    pub fn new<I, J, K>(position: I, rotation: J, scale: K) -> Self where
+        I: Into<Vec<f64>>,
+        J: Into<Vec<f64>>,
+        K: Into<Vec<f64>>,
+    {
         TransformDescription {
-            position: Vec::from(position),
-            rotation: Vec::from(rotation),
-            scale: Vec::from(scale),
+            position: position.into(),
+            rotation: rotation.into(),
+            scale: scale.into(),
         }
     }
 
@@ -34,15 +38,4 @@ impl TransformDescription {
     pub fn scale(&self) -> &[f64] {
         &self.scale
     }
-
-    //FIXME
-    /*
-    pub fn generate_transform(&self) -> Transform {
-        let pos = (self.position[0], self.position[1], self.position[2]);
-        let rot = (self.rotation[0], self.rotation[1], self.rotation[2]);
-        let scale = (self.scale[0], self.scale[1], self.scale[2]);
-
-        Transform::new(pos, rot, scale)
-    }
-    */
 }

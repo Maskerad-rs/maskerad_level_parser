@@ -8,7 +8,6 @@
 use maskerad_gameobject_model::properties::mesh::Mesh;
 use data_parser_error::DataParserResult;
 use std::path::Path;
-
 use gltf::Gltf;
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -17,23 +16,13 @@ pub struct MeshDescription {
 }
 
 impl MeshDescription {
-    pub fn new(path: &str) -> Self {
+    pub fn new<I: ToString>(path: I) -> Self {
         MeshDescription {
-            path: String::from(path),
+            path: path.to_string(),
         }
     }
 
-    pub fn path(&self) -> &Path {
-        self.path.as_ref()
+    pub fn path(&self) -> &str {
+        self.path.as_str()
     }
-
-    //FIXME
-    /*
-    pub fn generate_mesh(&self, file_system: &FileSystem) -> DataParserResult<Mesh> {
-        let gltf_reader = file_system.open(self.path.as_ref())?;
-        let gltf_data = Gltf::from_reader(gltf_reader)?.validate_completely()?;
-
-        Ok(Mesh::new(gltf_data))
-    }
-    */
 }
