@@ -7,7 +7,7 @@
 
 use maskerad_gameobject_model::properties::transform::Transform;
 
-#[derive(Debug, Deserialize, Serialize, PartialOrd, PartialEq, Default)]
+#[derive(Debug, Deserialize, Serialize, PartialOrd, PartialEq, Default, Clone)]
 pub struct TransformDescription {
     position: Vec<f64>,
     rotation: Vec<f64>,

@@ -12,9 +12,12 @@ use data_parser_error::{DataParserError, DataParserResult};
 use std::path::Path;
 use std::io::{Read, Write};
 
+use descriptor::Descriptor;
 use maskerad_gameobject_model::gameobject::GameObject;
 use mesh_description::MeshDescription;
 use transform_description::TransformDescription;
+
+
 
 /*
     Gameobject file structure:
@@ -30,14 +33,26 @@ use transform_description::TransformDescription;
     ...
 */
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct GameObjectDescription {
     id: String,
     transform: TransformDescription,
     mesh: Option<MeshDescription>,
 }
 
+impl Descriptor for GameObjectDescription {
+    fn id(&self) -> &str {
+        self.id.as_ref()
+    }
 
+    fn transform_description(&self) -> &TransformDescription {
+        &self.transform
+    }
+
+    fn mesh_description(&self) -> &Option<MeshDescription> {
+        &self.mesh
+    }
+}
 
 impl GameObjectDescription {
     pub fn load_from_toml<P: AsRef<Path>>(path: P) -> DataParserResult<Self> {
@@ -71,18 +86,6 @@ impl GameObjectDescription {
             transform: transform_desc,
             mesh: mesh_desc.into(),
         }
-    }
-
-    pub fn id(&self) -> &str {
-        self.id.as_str()
-    }
-
-    pub fn transform(&self) -> &TransformDescription {
-        &self.transform
-    }
-
-    pub fn mesh(&self) -> &Option<MeshDescription> {
-        &self.mesh
     }
 }
 

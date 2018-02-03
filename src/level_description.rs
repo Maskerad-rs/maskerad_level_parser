@@ -89,6 +89,7 @@ mod level_file_test {
     use super::*;
     use std::path::PathBuf;
     use maskerad_filesystem::game_directories::GameDirectories;
+    use descriptor::Descriptor;
 
     #[test]
     fn test_deserialization() {

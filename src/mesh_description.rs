@@ -10,7 +10,7 @@ use data_parser_error::DataParserResult;
 use std::path::Path;
 use gltf::Gltf;
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct MeshDescription {
     path: String,
 }
