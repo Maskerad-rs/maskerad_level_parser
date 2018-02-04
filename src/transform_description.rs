@@ -14,6 +14,7 @@ pub struct TransformDescription {
     scale: Vec<f64>,
 }
 
+
 impl TransformDescription {
     pub fn new<I, J, K>(position: I, rotation: J, scale: K) -> Self where
         I: Into<Vec<f64>>,

@@ -13,9 +13,8 @@ extern crate maskerad_filesystem;
 extern crate gltf;
 extern crate maskerad_gameobject_model;
 
-pub mod gameobject_description;
+pub mod gameobject_builder;
 pub mod level_description;
 pub mod data_parser_error;
 pub mod transform_description;
 pub mod mesh_description;
-pub mod descriptor;

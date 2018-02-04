@@ -10,15 +10,16 @@ use data_parser_error::DataParserResult;
 use std::path::Path;
 use gltf::Gltf;
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, Default)]
 pub struct MeshDescription {
     path: String,
 }
 
+
 impl MeshDescription {
-    pub fn new<I: ToString>(path: I) -> Self {
+    pub fn new<I: Into<String>>(path: I) -> Self {
         MeshDescription {
-            path: path.to_string(),
+            path: path.into(),
         }
     }
 

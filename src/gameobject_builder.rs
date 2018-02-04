@@ -12,7 +12,6 @@ use data_parser_error::{DataParserError, DataParserResult};
 use std::path::Path;
 use std::io::{Read, Write};
 
-use descriptor::Descriptor;
 use maskerad_gameobject_model::gameobject::GameObject;
 use mesh_description::MeshDescription;
 use transform_description::TransformDescription;
@@ -33,28 +32,14 @@ use transform_description::TransformDescription;
     ...
 */
 
-#[derive(Deserialize, Serialize, Debug, Clone)]
-pub struct GameObjectDescription {
+#[derive(Deserialize, Serialize, Debug, Clone, Default)]
+pub struct GameObjectBuilder {
     id: String,
     transform: TransformDescription,
     mesh: Option<MeshDescription>,
 }
 
-impl Descriptor for GameObjectDescription {
-    fn id(&self) -> &str {
-        self.id.as_ref()
-    }
-
-    fn transform_description(&self) -> &TransformDescription {
-        &self.transform
-    }
-
-    fn mesh_description(&self) -> &Option<MeshDescription> {
-        &self.mesh
-    }
-}
-
-impl GameObjectDescription {
+impl GameObjectBuilder {
     pub fn load_from_toml<P: AsRef<Path>>(path: P) -> DataParserResult<Self> {
         let mut bufreader = maskerad_filesystem::open(path)?;
         let mut content = String::new();
@@ -73,19 +58,35 @@ impl GameObjectDescription {
     }
 
     fn as_string_toml(&self) -> DataParserResult<String> {
-        let toml_string = toml::to_string_pretty(&self)?;
+        let toml_string = toml::to_string(&self)?;
         Ok(toml_string)
     }
 
-    pub fn new<I, M>(id: I, transform_desc: TransformDescription, mesh_desc: M) -> Self where
-        M: Into<Option<MeshDescription>>,
-        I: ToString
+
+    pub fn new<I>(id: I) -> Self where
+        I: Into<String>
     {
-        GameObjectDescription {
-            id: id.to_string(),
-            transform: transform_desc,
-            mesh: mesh_desc.into(),
+        GameObjectBuilder {
+            id: id.into(),
+            transform: TransformDescription::default(),
+            mesh: None,
         }
+    }
+
+    pub fn add_transform<M: Into<TransformDescription>>(&mut self, transform: M) -> &mut Self {
+        self.transform = transform.into();
+        self
+    }
+
+    pub fn add_mesh<M: Into<Option<MeshDescription>>>(&mut self, mesh: M) -> &mut Self {
+        self.mesh = mesh.into();
+        self
+    }
+
+    //TODO: the gameobject takes care of creating all the component and give them to the resource manager ?
+    //TODO: the service locator ?
+    pub fn build(&self) {
+        unimplemented!()
     }
 }
 
@@ -101,7 +102,7 @@ mod gameobject_description_test {
         // gameobject2.toml -> has mesh
         let game_dirs = GameDirectories::new("gameobject_file_test", "malkaviel").unwrap();
         let go2_path = game_dirs.construct_path_from_root(RootDir::WorkingDirectory, "data_deserialization_test/gameobject2.toml").unwrap();
-        let go2_desc = GameObjectDescription::load_from_toml(go2_path).unwrap();
+        let go2_desc = GameObjectBuilder::load_from_toml(go2_path).unwrap();
 
         assert!(go2_desc.mesh.is_some());
         assert_eq!(go2_desc.id.as_str(), "gameobject2");
@@ -111,7 +112,7 @@ mod gameobject_description_test {
 
         //gameobject1.toml -> no mesh
         let go1_path = game_dirs.construct_path_from_root(RootDir::WorkingDirectory, "data_deserialization_test/gameobject1.toml").unwrap();
-        let go1_desc = GameObjectDescription::load_from_toml(go1_path).unwrap();
+        let go1_desc = GameObjectBuilder::load_from_toml(go1_path).unwrap();
 
         assert!(go1_desc.mesh.is_none());
         assert_eq!(go1_desc.id.as_str(), "gameobject1");
@@ -134,7 +135,10 @@ mod gameobject_description_test {
         let transform_desc = TransformDescription::new(pos, rot, scale);
         let mesh_desc = MeshDescription::new("path_test_mesh");
 
-        let go4_desc = GameObjectDescription::new(go4_path.to_str().unwrap(), transform_desc, mesh_desc);
+        let mut go4_desc = GameObjectBuilder::new(go4_path.to_str().unwrap());
+        go4_desc
+            .add_transform(transform_desc)
+            .add_mesh(mesh_desc);
         go4_desc.save_as_toml().unwrap();
         assert!(go4_path.as_path().exists());
 
@@ -144,7 +148,8 @@ mod gameobject_description_test {
         let transform_desc = TransformDescription::new(pos, rot, scale);
 
         let go5_path = game_dirs.construct_path_from_root(RootDir::WorkingDirectory, "data_serialization_test/gameobject5.toml").expect("Could not construct go5 path");
-        let go5_desc = GameObjectDescription::new(go5_path.to_str().unwrap(), transform_desc, None);
+        let mut go5_desc = GameObjectBuilder::new(go5_path.to_str().unwrap());
+        go5_desc.add_transform(transform_desc);
         go5_desc.save_as_toml().unwrap();
         assert!(go5_path.as_path().exists());
     }
