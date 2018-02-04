@@ -88,6 +88,16 @@ impl GameObjectBuilder {
     pub fn build(&self) {
         unimplemented!()
     }
+
+    //TODO: we need to refine all that stuff, it fucking sucks.
+    pub fn get_mesh_resource(&self) -> Option<String> {
+        match self.mesh {
+            Some(ref mesh) => {
+                Some(mesh.path().to_owned())
+            },
+            None => None,
+        }
+    }
 }
 
 
