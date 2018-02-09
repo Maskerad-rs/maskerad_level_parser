@@ -18,12 +18,14 @@ pub struct MeshDescription {
 
 impl MeshDescription {
     pub fn new<I: Into<String>>(path: I) -> Self {
+        debug!("Creating a new MeshDescription.");
         MeshDescription {
             path: path.into(),
         }
     }
 
     pub fn path(&self) -> &str {
+        debug!("Getting the path to the mesh data.");
         self.path.as_str()
     }
 }

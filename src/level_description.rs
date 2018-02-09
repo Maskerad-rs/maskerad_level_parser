@@ -7,7 +7,6 @@
 
 use toml;
 use std::collections::HashMap;
-use maskerad_filesystem::filesystem as maskerad_filesystem;
 use data_parser_error::{DataParserError, DataParserResult};
 use std::path::Path;
 use gltf::Gltf;
@@ -33,29 +32,27 @@ pub struct LevelDescription {
 }
 
 impl LevelDescription {
-    pub fn load_from_toml<P: AsRef<Path>>(path: P) -> DataParserResult<Self> {
-        let mut bufreader = maskerad_filesystem::open(path)?;
+    pub fn load_from_toml<R>(reader: &mut R) -> DataParserResult<Self> where
+        R: Read
+    {
+        debug!("Creating a LevelDescription from toml file.");
+
         let mut content = String::new();
-        bufreader.read_to_string(&mut content)?;
+        trace!("Reading content of the reader in string...");
+        reader.read_to_string(&mut content)?;
         toml::from_str(content.as_ref()).map_err(|deserialization_error| {
             DataParserError::from(deserialization_error)
         })
     }
 
-    fn as_string_toml(&self) -> DataParserResult<String> {
+    pub fn as_string_toml(&self) -> DataParserResult<String> {
+        debug!("Getting a string representation of the LevelDescription.");
         let toml_string = toml::to_string(&self)?;
         Ok(toml_string)
     }
 
-    pub fn save_as_toml(&self) -> DataParserResult<()> {
-        let toml_string = self.as_string_toml()?;
-        let path: &Path = self.title.as_ref();
-        let mut bufwriter = maskerad_filesystem::create(path)?;
-        bufwriter.write_all(toml_string.as_bytes())?;
-        Ok(())
-    }
-
     pub fn new<I: Into<String>>(title: I) -> Self {
+        debug!("Creating a new LevelDescription.");
         LevelDescription {
             title: title.into(),
             gameobjects: Vec::new(),
@@ -63,11 +60,17 @@ impl LevelDescription {
     }
 
     pub fn add_gameobject<I: Into<GameObjectBuilder>>(&mut self, obj: I) -> &mut Self {
+        debug!("Adding a GameObjectBuilder to the LevelDescription.");
         self.gameobjects.push(obj.into());
         self
     }
 
+    pub fn title(&self) -> &str {
+        self.title.as_str()
+    }
+
     pub fn slice(&self) -> &[GameObjectBuilder] {
+        debug!("Getting an immutable slice over all the GameObjectBuilders in the LevelDescription.");
         &self.gameobjects
     }
 }
@@ -77,8 +80,6 @@ impl LevelDescription {
 mod level_file_test {
     use super::*;
     use std::path::PathBuf;
-    use maskerad_filesystem::game_directories::GameDirectories;
-    use maskerad_filesystem::game_directories::RootDir;
 
     /*
     #[test]
@@ -91,7 +92,7 @@ mod level_file_test {
     }
     */
 
-
+    /*
     #[test]
     fn test_serialization() {
         let game_dirs = GameDirectories::new("gameobject_file_test", "malkaviel").unwrap();
@@ -113,5 +114,6 @@ mod level_file_test {
         level_desc.save_as_toml().unwrap();
         assert!(level_path.as_path().exists());
     }
+    */
 
 }

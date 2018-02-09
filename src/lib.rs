@@ -9,9 +9,11 @@ extern crate toml;
 #[macro_use]
 extern crate serde_derive;
 extern crate serde;
-extern crate maskerad_filesystem;
 extern crate gltf;
 extern crate maskerad_gameobject_model;
+
+#[macro_use]
+extern crate log;
 
 pub mod gameobject_builder;
 pub mod level_description;

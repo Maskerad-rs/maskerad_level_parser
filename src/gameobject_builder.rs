@@ -6,8 +6,6 @@
 // copied, modified, or distributed except according to those terms.
 
 use toml;
-use maskerad_filesystem::filesystem as maskerad_filesystem;
-use maskerad_filesystem::game_directories::RootDir;
 use data_parser_error::{DataParserError, DataParserResult};
 use std::path::Path;
 use std::io::{Read, Write};
@@ -32,7 +30,7 @@ use transform_description::TransformDescription;
     ...
 */
 
-#[derive(Deserialize, Serialize, Debug, Clone, Default)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct GameObjectBuilder {
     id: String,
     transform: TransformDescription,
@@ -40,24 +38,22 @@ pub struct GameObjectBuilder {
 }
 
 impl GameObjectBuilder {
-    pub fn load_from_toml<P: AsRef<Path>>(path: P) -> DataParserResult<Self> {
-        let mut bufreader = maskerad_filesystem::open(path)?;
+    pub fn load_from_toml<R>(reader: &mut R) -> DataParserResult<Self> where
+        R: Read
+    {
+        debug!("Creating a GameObjectBuilder from toml file.");
+
         let mut content = String::new();
-        bufreader.read_to_string(&mut content)?;
+        trace!("Reading content of the bufreader in string...");
+        reader.read_to_string(&mut content)?;
+
         toml::from_str(content.as_ref()).map_err(|deserialization_error| {
             DataParserError::from(deserialization_error)
         })
     }
 
-    pub fn save_as_toml(&self) -> DataParserResult<()> {
-        let toml_string = self.as_string_toml()?;
-        let path: &Path = self.id.as_ref();
-        let mut bufwriter = maskerad_filesystem::create(path)?;
-        bufwriter.write_all(toml_string.as_bytes())?;
-        Ok(())
-    }
-
-    fn as_string_toml(&self) -> DataParserResult<String> {
+    pub fn as_string_toml(&self) -> DataParserResult<String> {
+        debug!("Getting a string representation of the GameObjectBuilder.");
         let toml_string = toml::to_string(&self)?;
         Ok(toml_string)
     }
@@ -66,6 +62,7 @@ impl GameObjectBuilder {
     pub fn new<I>(id: I) -> Self where
         I: Into<String>
     {
+        debug!("Creating a new GameObjectBuilder.");
         GameObjectBuilder {
             id: id.into(),
             transform: TransformDescription::default(),
@@ -74,11 +71,13 @@ impl GameObjectBuilder {
     }
 
     pub fn add_transform<M: Into<TransformDescription>>(&mut self, transform: M) -> &mut Self {
+        debug!("Adding a TransformDescription to the GameObjectBuilder.");
         self.transform = transform.into();
         self
     }
 
     pub fn add_mesh<M: Into<Option<MeshDescription>>>(&mut self, mesh: M) -> &mut Self {
+        debug!("Adding a MeshDescription to the GameObjectBuilder.");
         self.mesh = mesh.into();
         self
     }
@@ -98,6 +97,14 @@ impl GameObjectBuilder {
             None => None,
         }
     }
+
+    pub fn id(&self) -> &str {
+        self.id.as_str()
+    }
+
+    pub fn transform(&self) -> &TransformDescription {
+        &self.transform
+    }
 }
 
 
@@ -105,10 +112,10 @@ impl GameObjectBuilder {
 #[cfg(test)]
 mod gameobject_description_test {
     use super::*;
-    use maskerad_filesystem::game_directories::GameDirectories;
 
+    /*
     #[test]
-    fn deserialize() {
+    fn deserialize_gameobject_builder() {
         // gameobject2.toml -> has mesh
         let game_dirs = GameDirectories::new("gameobject_file_test", "malkaviel").unwrap();
         let go2_path = game_dirs.construct_path_from_root(RootDir::WorkingDirectory, "data_deserialization_test/gameobject2.toml").unwrap();
@@ -134,7 +141,7 @@ mod gameobject_description_test {
 
 
     #[test]
-    fn serialize() {
+    fn serialize_gameobjectbuilder() {
         let game_dirs = GameDirectories::new("gameobject_file_test", "malkaviel").unwrap();
         let go4_path = game_dirs.construct_path_from_root(RootDir::WorkingDirectory, "data_serialization_test/gameobject4.toml").expect("Could not construct go4 path");
 
@@ -163,5 +170,6 @@ mod gameobject_description_test {
         go5_desc.save_as_toml().unwrap();
         assert!(go5_path.as_path().exists());
     }
+    */
 
 }

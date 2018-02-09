@@ -23,5 +23,8 @@ toml = "~0.4"
 serde_derive = "~1.0"
 serde = "~1.0"
 gltf = "~0.9"
-maskerad_filesystem = { git = "https://github.com/Maskerad-rs/maskerad_filesystem" }
 maskerad_gameobject_model = { git = "https://github.com/Maskerad-rs/maskerad_gameobject_model" }
+log = "~0.4"
+
+[dev-dependencies]
+maskerad_filesystem = { git = "https://github.com/Maskerad-rs/maskerad_filesystem" }

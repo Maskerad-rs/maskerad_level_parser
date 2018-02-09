@@ -9,7 +9,6 @@ use toml::de::Error as DeserializationError;
 use toml::ser::Error as SerializationError;
 use std::fmt;
 use std::error::Error;
-use maskerad_filesystem::filesystem_error::FileSystemError;
 use gltf::Error as GltfError;
 use std::io::Error as IoError;
 
@@ -18,7 +17,6 @@ use std::io::Error as IoError;
 pub enum DataParserError {
     DeserializationError(String, DeserializationError),
     SerializationError(String, SerializationError),
-    FileSystemError(String, FileSystemError),
     GltfError(String, GltfError),
     IoError(String, IoError),
 }
@@ -34,9 +32,6 @@ impl fmt::Display for DataParserError {
             },
             &DataParserError::DeserializationError(ref description, _) => {
                 write!(f, "Deserialization error: {}", description)
-            },
-            &DataParserError::FileSystemError(ref description, _) => {
-                write!(f, "File system error: {}", description)
             },
             &DataParserError::GltfError(ref description, _) => {
                 write!(f, "Gltf error: {}", description)
@@ -57,9 +52,6 @@ impl Error for DataParserError {
             &DataParserError::DeserializationError(_, _) => {
                 "DeserializationError"
             },
-            &DataParserError::FileSystemError(_, _) => {
-                "FileSystemError"
-            },
             &DataParserError::GltfError(_, _) => {
                 "GltfError"
             },
@@ -76,9 +68,6 @@ impl Error for DataParserError {
             },
             &DataParserError::SerializationError(_, ref serialization_error) => {
                 Some(serialization_error)
-            },
-            &DataParserError::FileSystemError(_, ref filesystem_error) => {
-                Some(filesystem_error)
             },
             &DataParserError::GltfError(_, ref gltf_error) => {
                 Some(gltf_error)
@@ -101,12 +90,6 @@ impl From<SerializationError> for DataParserError {
 impl From<DeserializationError> for DataParserError {
     fn from(error: DeserializationError) -> Self {
         DataParserError::DeserializationError(format!("Error while deserializing the level as a Rust structure."), error)
-    }
-}
-
-impl From<FileSystemError> for DataParserError {
-    fn from(error: FileSystemError) -> Self {
-        DataParserError::FileSystemError(format!("Error while manipulating the file system."), error)
     }
 }
 

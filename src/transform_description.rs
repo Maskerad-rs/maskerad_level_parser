@@ -21,6 +21,7 @@ impl TransformDescription {
         J: Into<Vec<f64>>,
         K: Into<Vec<f64>>,
     {
+        debug!("Creating a new TransformDescription.");
         TransformDescription {
             position: position.into(),
             rotation: rotation.into(),
@@ -29,14 +30,17 @@ impl TransformDescription {
     }
 
     pub fn position(&self) -> &[f64] {
+        debug!("Getting an immutable slice to the position.");
         &self.position
     }
 
     pub fn rotation(&self) -> &[f64] {
+        debug!("Getting an immutable slice to the rotation.");
         &self.rotation
     }
 
     pub fn scale(&self) -> &[f64] {
+        debug!("Getting an immutable slice to the scale.");
         &self.scale
     }
 }
