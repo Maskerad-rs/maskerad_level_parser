@@ -19,12 +19,12 @@ is-it-maintained-open-issues = { repository = "Maskerad-rs/maskerad_level_parser
 maintenance = { status = "actively-developed" }
 
 [dependencies]
-toml = "~0.4"
-serde_derive = "~1.0"
-serde = "~1.0"
-gltf = "~0.9"
+toml = "~0"
+serde_derive = "~1"
+serde = "~1"
+gltf = "~0"
 maskerad_gameobject_model = { git = "https://github.com/Maskerad-rs/maskerad_gameobject_model" }
-log = "~0.4"
+log = "~0"
 
 [dev-dependencies]
 maskerad_filesystem = { git = "https://github.com/Maskerad-rs/maskerad_filesystem" }

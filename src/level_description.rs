@@ -31,6 +31,12 @@ pub struct LevelDescription {
     gameobjects: Vec<GameObjectBuilder>, //TODO: Vec<GameObjectBuilder> ?
 }
 
+impl AsRef<LevelDescription> for LevelDescription {
+    fn as_ref(&self) -> &LevelDescription {
+        self
+    }
+}
+
 impl LevelDescription {
     pub fn load_from_toml<R>(reader: &mut R) -> DataParserResult<Self> where
         R: Read
